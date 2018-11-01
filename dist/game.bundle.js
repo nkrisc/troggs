@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -267,10 +267,14 @@ class Rect {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_vec_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_rect_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_direction_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_array2d_js__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__tile_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pathfinder_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_direction_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_array2d_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_font_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_VecMap_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__content_tile_js__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pathfinder_js__ = __webpack_require__(14);
+
+
 
 
 
@@ -300,17 +304,12 @@ class Stage {
 
         this.rooms = [];
         this.actors = [];
+        this.actorsByPos = new __WEBPACK_IMPORTED_MODULE_5__utils_VecMap_js__["a" /* default */]();
 
 
-        this.path = new __WEBPACK_IMPORTED_MODULE_5__pathfinder_js__["a" /* default */](this);
+        this.path = new __WEBPACK_IMPORTED_MODULE_7__pathfinder_js__["a" /* default */](this);
 
-        this._tile = {
-            wall: new __WEBPACK_IMPORTED_MODULE_4__tile_js__["a" /* default */]('wall', '#', '#666', '#333', false),
-            stone: new __WEBPACK_IMPORTED_MODULE_4__tile_js__["a" /* default */]('stone', '', '#000', '#000', false),
-            floor: new __WEBPACK_IMPORTED_MODULE_4__tile_js__["a" /* default */]('floor', ' .', '#999', '#666', true)
-        };
-
-        this._tiles = new __WEBPACK_IMPORTED_MODULE_3__utils_array2d_js__["a" /* default */](width, height)
+        this._tiles = new __WEBPACK_IMPORTED_MODULE_3__utils_array2d_js__["a" /* default */](width, height);
 
         this.initialized = false;
 
@@ -381,32 +380,15 @@ class Stage {
     }
 
     _generateTiles() {
-        /*
-        for (var x = 0; x < this.w; x++) {
-            this.tiles[x] = new Array(this.h);
-        }
-
-        for (var x = 0; x < this.w; x++) {
-            for (var y = 0; y < this.h; y++) {
-                this.tiles[x][y] = this.tile.stone;
-                //console.log(this.tile.stone);
-                //this.tiles[x][y] = new Tile('stone', '', '#000', '#000', false)
-            }
-        }
-        */
-
-
-        this._tiles.fill(this.tile.stone);
+        this._tiles.fill(__WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].stone);
 
     };
 
     _addTile(tile, vec) {
-        //this.tiles[vec.x][vec.y] = tile;
         this._tiles.update(vec, tile);
     };
 
     getTile(vec) {
-        //return this.tiles[vec.x][vec.y];
         return this._tiles.find(vec);
     };
 
@@ -463,7 +445,7 @@ class Stage {
 
         rooms.forEach(r => {
             r.tiles.forEach(t => {
-                this._addTile(this.tile.floor, t);
+                this._addTile(__WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor, t);
             })
         });
 
@@ -487,7 +469,7 @@ class Stage {
 
             validStart = true;
             __WEBPACK_IMPORTED_MODULE_2__utils_direction_js__["a" /* default */].cardinal.forEach(d => {
-                if (this.getTile(attemptedStart.add(d)) === this.tile.floor) validStart = false;
+                if (this.getTile(attemptedStart.add(d)) === __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor) validStart = false;
                 if (!this.inBounds(attemptedStart.add(d))) validStart = false;
             })
         }
@@ -550,26 +532,26 @@ class Stage {
             new __WEBPACK_IMPORTED_MODULE_0__utils_vec_js__["a" /* default */](this.w, this.h)
         );
         all.tiles.forEach(t => {
-            if (this.getTile(t) === this.tile.stone &&
-                this.getTile(t.add(__WEBPACK_IMPORTED_MODULE_2__utils_direction_js__["a" /* default */].S)) === this.tile.floor) {
-                this._addTile(this.tile.wall, t);
+            if (this.getTile(t) === __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].stone &&
+                this.getTile(t.add(__WEBPACK_IMPORTED_MODULE_2__utils_direction_js__["a" /* default */].S)) === __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor) {
+                this._addTile(__WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].wall, t);
             }
         });
     };
 
     _carve(vec) {
-        this._addTile(this.tile.floor, vec);
+        this._addTile(__WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor, vec);
     };
 
     _canCarve(vec, dir) {
         //if (!this.inBounds(vec.add(dir))) return false;
         if (!this._tiles.bounds.contains(vec.add(dir))) return false;
-        if (this.getTile(vec.add(dir)) === this.tile.floor) return false;
+        if (this.getTile(vec.add(dir)) === __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor) return false;
 
         let check = vec.add(dir.scale(2));
         //if (!this.inBounds(check)) return false;
         if (!this._tiles.bounds.contains(check)) return false;
-        return this.getTile(check) !== this.tile.floor;
+        return this.getTile(check) !== __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor;
     };
 
     _pruneDeadEnds() {
@@ -581,17 +563,17 @@ class Stage {
             var test = 0;
 
             all.forEach(v => {
-                if (this.getTile(v) !== this.tile.floor) return;
+                if (this.getTile(v) !== __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor) return;
                 test++;
                 var open = 0;
                 __WEBPACK_IMPORTED_MODULE_2__utils_direction_js__["a" /* default */].cardinal.forEach(d => {
-                    if (this.getTile(v.add(d)) === this.tile.floor) open++;
+                    if (this.getTile(v.add(d)) === __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor) open++;
                 });
 
                 if (open != 1) return;
 
                 done = false;
-                this._addTile(this.tile.stone, v);
+                this._addTile(__WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].stone, v);
             });
         }
     };
@@ -625,7 +607,7 @@ class Stage {
             candidates.forEach(v => {
                 var open = 0;
                 __WEBPACK_IMPORTED_MODULE_2__utils_direction_js__["a" /* default */].cardinal.forEach(d => {
-                    if (this.getTile(v.add(d)) === this.tile.floor) open++;
+                    if (this.getTile(v.add(d)) === __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].floor) open++;
                 });
 
                 if (open < 2) candidates.splice(candidates.indexOf(v), 1);
@@ -652,7 +634,7 @@ class Stage {
             for (var y = 1; y < this.h; y += 2) {
                 var tile = new __WEBPACK_IMPORTED_MODULE_0__utils_vec_js__["a" /* default */](x, y);
 
-                if (this.getTile(tile) === this.tile.stone) this._generateCorridors(tile);
+                if (this.getTile(tile) === __WEBPACK_IMPORTED_MODULE_6__content_tile_js__["a" /* default */].stone) this._generateCorridors(tile);
             }
         }
 
@@ -677,8 +659,114 @@ class Stage {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+class Font {
+    constructor(image, glyphSize) {
+        this.source = image;
+        this.size = glyphSize;
+        this.colors = {};
+    }
+
+    _getColor(color) {
+        if (this.colors[color]) return this.colors[color];
+
+        var tint = document.createElement('canvas');
+        var _ctx = tint.getContext('2d');
+        var _src = this.source;
+
+        tint.width = this.source.width;
+        tint.height = this.source.height;
+        _ctx.drawImage(_src, 0, 0);
+        _ctx.globalCompositeOperation = 'source-atop';
+        _ctx.fillStyle = color;
+        _ctx.fillRect(0, 0, _src.width, _src.height);
+
+        this.colors[color] = tint;
+
+        return tint;
+    }
+
+    _getGlyphPos(code) {
+        var y = Math.floor(code / 32);
+        var x = code - (32 * y);
+
+        return {x, y};
+    }
+
+    getGlyph(code, color) {
+        var _font = this._getColor(color);
+        var _glyph = document.createElement('canvas');
+        var _ctx = _glyph.getContext('2d');
+        var _pos = this._getGlyphPos(code);
+
+        var sx = _pos.x * this.size;
+        var sy = _pos.y * this.size;
+        var sw = this.size;
+        var sh = this.size;
+
+        var dx = 0;
+        var dy = 0;
+        var dw = this.size;
+        var dh = this.size;
+
+        _ctx.drawImage(_font, sx, sy, sw, sh, dx, dy, dw, dh);
+
+        return _glyph;
+
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Font;
+
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vec_js__ = __webpack_require__(0);
+
+
+class VecMap {
+    constructor() {
+        this._map = new Map();
+    }
+
+    _hash(vec) {
+        if (vec instanceof __WEBPACK_IMPORTED_MODULE_0__vec_js__["a" /* default */] === false) throw 'VecMap can only map Vec';
+
+        return `${vec.x},${vec.y}`;
+    }
+
+    set(vec, value) {
+        var key = this._hash(vec);
+        return this._map.set(key, value);
+    }
+
+    get(vec) {
+        var key = this._hash(vec);
+        return this._map.get(key);
+    }
+
+    remove(vec) {
+        var key = this._hash(vec);
+        return this._map.delete(key);
+    }
+
+    entries() {
+        return this._map.entries();
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = VecMap;
+
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__engine_game__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__engine_game__ = __webpack_require__(6);
 
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -741,7 +829,24 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('curtain').style.display = 'none';
 
     function loop() {
-        game.update();
+        //Check if we're in the middle of a turn.
+        if (game.turnComplete) {
+            //The turn is finished so draw the result.
+            game.scene.draw(game.stage);
+
+            //Start a new turn
+            console.log('Starting new turn.');
+            game.turn = game.update();
+            game.turn.next();
+        } else {
+            if (!game.needsInput) {
+                //We're not waiting on user input and in the middle of a turn.
+                //Iterate the update function to continue processing the turn.
+                game.turn.next();
+            }
+        }
+
+        window.requestAnimationFrame(loop);
     }
 
     window.requestAnimationFrame(loop);
@@ -749,14 +854,16 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__content_monster_defs_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__content_monster_defs_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stage_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__scene_js__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__entity_js__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__scene_js__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_VecMap_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__old_entity_js__ = __webpack_require__(16);
+
 
 
 
@@ -766,11 +873,15 @@ document.addEventListener('DOMContentLoaded', function(){
 
 class Game {
     constructor(canvas) {
-        this.scene = new __WEBPACK_IMPORTED_MODULE_2__scene_js__["a" /* default */](canvas, 9, 14);
+        this.scene = new __WEBPACK_IMPORTED_MODULE_2__scene_js__["a" /* default */](canvas, 16, 16);
         this.scene.initialize();
 
         this._currentStage = 0;
         this.stages = [];
+
+        this.turn = null;
+        this.turnComplete = true;
+        this.needsInput = false;
 
         //In the future, can make new stages for new levels
         this.stages.push(new __WEBPACK_IMPORTED_MODULE_1__stage_js__["a" /* default */](142, 62));
@@ -817,7 +928,7 @@ class Game {
                 //return
 
             }
-            return new __WEBPACK_IMPORTED_MODULE_3__entity_js__["a" /* default */]({
+            return new __WEBPACK_IMPORTED_MODULE_4__old_entity_js__["a" /* default */]({
                 name: 'Trogg',
                 type: TROGG,
                 hp: 50,
@@ -867,7 +978,7 @@ class Game {
                 //return
 
             }
-            return new __WEBPACK_IMPORTED_MODULE_3__entity_js__["a" /* default */]({
+            return new __WEBPACK_IMPORTED_MODULE_4__old_entity_js__["a" /* default */]({
                 name: 'Kobold',
                 type: KOBOLD,
                 hp: 20,
@@ -903,7 +1014,7 @@ class Game {
 
                 behavior.wander();
             }
-            return new __WEBPACK_IMPORTED_MODULE_3__entity_js__["a" /* default */]({
+            return new __WEBPACK_IMPORTED_MODULE_4__old_entity_js__["a" /* default */]({
                 name: 'Green Slime',
                 type: SLIME,
                 hp: 40,
@@ -924,7 +1035,7 @@ class Game {
              new GreenSlime(this.pos.x - 1, this.pos.y);
              }*/
         }
-        window.hero = new __WEBPACK_IMPORTED_MODULE_3__entity_js__["a" /* default */]({
+        window.hero = new __WEBPACK_IMPORTED_MODULE_4__old_entity_js__["a" /* default */]({
             name: 'Hero',
             type: HERO,
             hp: 100,
@@ -969,13 +1080,24 @@ class Game {
         //this.stages.push(new Stage);
     }
 
-    update() {
-        this.stage.actors.forEach(actor => {
-            if (actor.isAI) actor.logic(actor);
-            actor.act();
-        });
+    * update() {
+        var actors = this.stage.actors;
+        var currentActorIndex = 0;
+        this.turnComplete = false;
 
-        this.scene.draw(this.stage);
+        while (currentActorIndex < actors.length) {
+            var currentActor = actors[currentActorIndex];
+
+            if (currentActor.needsInput) {
+                this.needsInput = true;
+                yield;
+            }
+
+            currentActor.update();
+            currentActorIndex++;
+        }
+
+        this.turnComplete = true;
     }
 
     initialize() {
@@ -992,7 +1114,7 @@ class Game {
 
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1006,7 +1128,7 @@ const Monsters = {};
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1048,7 +1170,7 @@ class Direction {
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1087,7 +1209,7 @@ class Array2D {
         this._elements[vec.y * this._w + vec.x] = value;
     }
 
-    fill(value) {
+    fill(value) {221
         for (var x = 0; x < this._w; x++) {
             for (var y = 0; y < this._h; y++) {
                 this._elements[y * this._w + x] = value;
@@ -1101,27 +1223,178 @@ class Array2D {
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-class Tile {
-    constructor(name, glyph, color, bgColor, passable) {
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__engine_tiletype_js__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__colors_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__engine_utils_glyph_js__ = __webpack_require__(13);
+
+
+
+
+const Tile = {};
+Tile.stone = new __WEBPACK_IMPORTED_MODULE_0__engine_tiletype_js__["a" /* default */]('stone', __WEBPACK_IMPORTED_MODULE_2__engine_utils_glyph_js__["a" /* default */].space, null, __WEBPACK_IMPORTED_MODULE_1__colors_js__["a" /* default */].black, false);
+Tile.wall = new __WEBPACK_IMPORTED_MODULE_0__engine_tiletype_js__["a" /* default */]('wall', __WEBPACK_IMPORTED_MODULE_2__engine_utils_glyph_js__["a" /* default */].halfBlockBottom, __WEBPACK_IMPORTED_MODULE_1__colors_js__["a" /* default */].dark_grey, __WEBPACK_IMPORTED_MODULE_1__colors_js__["a" /* default */].black, false);
+Tile.floor = new __WEBPACK_IMPORTED_MODULE_0__engine_tiletype_js__["a" /* default */]('floor', __WEBPACK_IMPORTED_MODULE_2__engine_utils_glyph_js__["a" /* default */].middleDot, __WEBPACK_IMPORTED_MODULE_1__colors_js__["a" /* default */].light_grey, __WEBPACK_IMPORTED_MODULE_1__colors_js__["a" /* default */].grey, true);
+
+/* harmony default export */ __webpack_exports__["a"] = (Tile);
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class TileType {
+    constructor(name, appearance, color, bgColor, passable) {
         this.color = color;
-        this.glyph = glyph;
         this.bgColor = bgColor;
         this.passable = passable;
         this.name = name;
+        this.appearance = appearance;
         this.explored = false;
         this.visible = true;
     }
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Tile;
+/* harmony export (immutable) */ __webpack_exports__["a"] = TileType;
 ;
 
 
 /***/ }),
-/* 9 */
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var red = '#FF0000';
+var dark_red = '#990000';
+var white = '#FFFFFF';
+var black = '#000000';
+var dark_grey = '#333333';
+var grey = '#666666';
+var light_grey = '#999999';
+var blue = '#0000FF';
+var green = '#006600';
+
+class Color {
+    static get red() { return red };
+    static get dark_red() { return dark_red };
+    static get white() { return white };
+    static get black() { return black };
+    static get grey() { return grey };
+    static get dark_grey() { return dark_grey };
+    static get light_grey() { return light_grey };
+    static get blue() { return blue };
+    static get green() { return green };
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Color;
+
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const Glyph = {};
+Glyph.space = 0;
+Glyph.faceLine = 2;
+Glyph.faceFill = 3;
+Glyph.heart = 4;
+Glyph.diamond = 5;
+Glyph.club = 6;
+Glyph.spade = 7;
+Glyph.fatDot = 8;
+//9
+Glyph.doorOutline = 10;
+Glyph.doorFill = 11;
+//12
+//13
+//14
+//15
+//16
+
+Glyph.rightTriangle = 17;
+Glyph.leftTriangle = 18;
+Glyph.doubleVerticalArrow = 19;
+Glyph.doubleExclamation = 20;
+//21
+//22
+//23
+//24
+Glyph.upArrow = 25;
+Glyph.downArrow = 26;
+Glyph.rightArrow = 27;
+Glyph.leftArrow = 28;
+Glyph.carriageReturn = 29;
+Glyph.doubleHorizontalArrow = 30;
+Glyph.upTriangle = 31;
+Glyph.downTriangle = 32;
+
+//33
+Glyph.exclamation = 34;
+Glyph.umlaut = 35;
+Glyph.hash = 36;
+Glyph.dollar = 37;
+Glyph.percent = 38;
+Glyph.ampersand = 39;
+Glyph.topDot = 40;
+Glyph.leftParens = 41;
+Glyph.rightParens = 42;
+Glyph.asterisk = 43;
+Glyph.plus = 44;
+Glyph.comma = 45;
+Glyph.hyphen = 46;
+Glyph.period = 47;
+Glyph.forwardSlash = 48;
+
+Glyph.zero = 49;
+Glyph.one = 50;
+Glyph.two = 51;
+Glyph.three = 52;
+Glyph.four = 53;
+Glyph.five = 54;
+Glyph.six = 55;
+Glyph.seven = 56;
+Glyph.eight = 57;
+Glyph.nine = 58;
+Glyph.colon = 59;
+Glyph.semicolon = 60;
+Glyph.lt = 61;
+Glyph.equals = 62;
+Glyph.gt = 63;
+Glyph.question = 64;
+
+Glyph.at = 65;
+Glyph.A = 66;
+Glyph.B = 67;
+Glyph.C = 68;
+Glyph.D = 69;
+Glyph.E = 70;
+Glyph.F = 71;
+Glyph.G = 72;
+Glyph.H = 73;
+Glyph.I = 74;
+Glyph.J = 75;
+Glyph.K = 76;
+Glyph.L = 77;
+Glyph.M = 78;
+Glyph.N = 79;
+Glyph.O = 80;
+
+Glyph.P = 81;
+Glyph.Q = 82;
+Glyph.R = 83;
+
+Glyph.halfBlockBottom = 220;
+Glyph.middleDot = 250;
+
+/* harmony default export */ __webpack_exports__["a"] = (Glyph);
+
+
+/***/ }),
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1131,6 +1404,8 @@ class Tile {
 class PathFinder {
     constructor(stage) {
         this.stage = stage;
+        this.preferOpen = false;
+        this.preferWall = false;
     }
 
     _aStar(start, goal) {
@@ -1227,12 +1502,14 @@ class PathFinder {
 
 
 /***/ }),
-/* 10 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_rect_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_vec_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_font_js__ = __webpack_require__(3);
+
 
 
 
@@ -1243,13 +1520,28 @@ class Scene {
         this.ctx = canvas.getContext('2d');
         this._gx = gx;
         this._gy = gy;
+        this.font = null;
+
+        window.ctx = this.ctx;
 
     }
 
     initialize() {
-        this.ctx.font = `bold ${this._gy}px "8bitoperator"`;
-        this.ctx.textBaseline = 'top';
+        //this.ctx.font = `bold ${this._gy}px "8bitoperator"`;
+        //this.ctx.textBaseline = 'top';
         this.ctx.scale(2, 2);
+
+        function loaded(img, _this) {
+            _this.font = new __WEBPACK_IMPORTED_MODULE_2__utils_font_js__["a" /* default */](img, _this._gx)
+        }
+
+        var fontSource = new Image();
+        fontSource.onload = loaded(fontSource, this)
+        fontSource.src = './font_8.png';
+
+        window.font = this.font;
+
+
     }
 
     get w() {
@@ -1326,15 +1618,25 @@ class Scene {
     _drawTile(tile, x, y) {
         //x = this.x(x);
         //y = this.y(y)
+        var rect =  new __WEBPACK_IMPORTED_MODULE_0__utils_rect_js__["a" /* default */](new __WEBPACK_IMPORTED_MODULE_1__utils_vec_js__["a" /* default */](x, y), new __WEBPACK_IMPORTED_MODULE_1__utils_vec_js__["a" /* default */](this._gx, this._gy));
 
-        var rect =  new __WEBPACK_IMPORTED_MODULE_0__utils_rect_js__["a" /* default */](new __WEBPACK_IMPORTED_MODULE_1__utils_vec_js__["a" /* default */](x, y), new __WEBPACK_IMPORTED_MODULE_1__utils_vec_js__["a" /* default */](this._gx, this._gy))
-        this._drawRect(tile.bgColor, rect)
-        this._drawText(tile.glyph, tile.color, x, y)
-
+        this._drawRect(tile.bgColor, rect);
+        this.ctx.drawImage(this.font.getGlyph(tile.appearance, tile.color), this.x(x), this.y(y));
+        /*
         if (tile.name === 'wall') {
             this._drawRect('#000', rect);
-            this._drawRect('#333', new __WEBPACK_IMPORTED_MODULE_0__utils_rect_js__["a" /* default */](new __WEBPACK_IMPORTED_MODULE_1__utils_vec_js__["a" /* default */](x, y + (this._gy / 2)), new __WEBPACK_IMPORTED_MODULE_1__utils_vec_js__["a" /* default */](this._gx, this._gy / 2)))
+            this.ctx.drawImage(this.font.getGlyph(220, '#333'), this.x(x), this.y(y));
+            //this._drawRect('#000', rect);
+            //this._drawRect('#333', new Rect(new Vec(x, y), new Vec(this._gx, this._gy / 2)))
         }
+
+        if (tile.name === 'floor') {
+            this._drawRect('#666', rect);
+            this.ctx.drawImage(this.font.getGlyph(250, '#333'), this.x(x), this.y(y));
+            //this._drawRect('#000', rect);
+            //this._drawRect('#333', new Rect(new Vec(x, y), new Vec(this._gx, this._gy / 2)))
+        }
+        */
 
     }
 }
@@ -1351,7 +1653,7 @@ for (let x = 0; x < Math.floor(canvas.width / gx); x++) {
         ctx.fillStyle = tile.bgColor;
         ctx.fillRect(x * gx, y * gy, gx, gy);
         ctx.fillStyle = tile.color;
-        ctx.fillText(tile.glyph, x * gx, y * gy);
+        ctx.fillText(tile.Glyph, x * gx, y * gy);
 
         if (tile === Stage.tile.wall) {
             ctx.fillStyle = '#000';
@@ -1365,11 +1667,11 @@ for (let x = 0; x < Math.floor(canvas.width / gx); x++) {
 
 
 /***/ }),
-/* 11 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__behavior_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__engine_behavior_js__ = __webpack_require__(17);
 
 
 class Entity {
@@ -1407,7 +1709,7 @@ class Entity {
         this.isAI = properties.isAI || false;
         if (this.isAI === true) {
             this.logic = properties.logic;
-            this.behavior = new __WEBPACK_IMPORTED_MODULE_0__behavior_js__["a" /* default */](this);
+            this.behavior = new __WEBPACK_IMPORTED_MODULE_0__engine_behavior_js__["a" /* default */](this);
         }
 
         Game.entities.push(this);
@@ -1576,7 +1878,7 @@ class Entity {
 
 
 /***/ }),
-/* 12 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

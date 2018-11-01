@@ -3,6 +3,8 @@ import Stage from './stage.js';
 export default class PathFinder {
     constructor(stage) {
         this.stage = stage;
+        this.preferOpen = false;
+        this.preferWall = false;
     }
 
     _aStar(start, goal) {

@@ -3,7 +3,7 @@ Game.scene.initialDraw = function() {
     let gx = Game.scene.gridSizeX;
     let gy = Game.scene.gridSizeY;
     let canvas = Game.scene.canvas;
-    ctx.font = `normal ${gy}px "8bitoperator"`;
+    //ctx.font = `normal ${gy}px "8bitoperator"`;
 
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -17,7 +17,7 @@ Game.scene.initialDraw = function() {
             ctx.fillStyle = tile.bgColor;
             ctx.fillRect(x * gx, y * gy, gx, gy);
             ctx.fillStyle = tile.color;
-            ctx.fillText(tile.glyph, x * gx, y * gy);
+            ctx.fillText(tile.Glyph, x * gx, y * gy);
 
             if (tile === Stage.tile.wall) {
                 ctx.fillStyle = '#000';

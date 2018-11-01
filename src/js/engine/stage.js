@@ -2,7 +2,9 @@ import Vec from './utils/vec.js';
 import Rect from './utils/rect.js';
 import Direction from './utils/direction.js';
 import Array2D from './utils/array2d.js';
-import Tile from './tile.js';
+import Font from './utils/font.js';
+import VecMap from './utils/VecMap.js';
+import Tile from '../content/tile.js';
 import PathFinder from './pathfinder.js';
 
 export default class Stage {
@@ -27,17 +29,12 @@ export default class Stage {
 
         this.rooms = [];
         this.actors = [];
+        this.actorsByPos = new VecMap();
 
 
         this.path = new PathFinder(this);
 
-        this._tile = {
-            wall: new Tile('wall', '#', '#666', '#333', false),
-            stone: new Tile('stone', '', '#000', '#000', false),
-            floor: new Tile('floor', ' .', '#999', '#666', true)
-        };
-
-        this._tiles = new Array2D(width, height)
+        this._tiles = new Array2D(width, height);
 
         this.initialized = false;
 
@@ -108,32 +105,15 @@ export default class Stage {
     }
 
     _generateTiles() {
-        /*
-        for (var x = 0; x < this.w; x++) {
-            this.tiles[x] = new Array(this.h);
-        }
-
-        for (var x = 0; x < this.w; x++) {
-            for (var y = 0; y < this.h; y++) {
-                this.tiles[x][y] = this.tile.stone;
-                //console.log(this.tile.stone);
-                //this.tiles[x][y] = new Tile('stone', '', '#000', '#000', false)
-            }
-        }
-        */
-
-
-        this._tiles.fill(this.tile.stone);
+        this._tiles.fill(Tile.stone);
 
     };
 
     _addTile(tile, vec) {
-        //this.tiles[vec.x][vec.y] = tile;
         this._tiles.update(vec, tile);
     };
 
     getTile(vec) {
-        //return this.tiles[vec.x][vec.y];
         return this._tiles.find(vec);
     };
 
@@ -190,7 +170,7 @@ export default class Stage {
 
         rooms.forEach(r => {
             r.tiles.forEach(t => {
-                this._addTile(this.tile.floor, t);
+                this._addTile(Tile.floor, t);
             })
         });
 
@@ -214,7 +194,7 @@ export default class Stage {
 
             validStart = true;
             Direction.cardinal.forEach(d => {
-                if (this.getTile(attemptedStart.add(d)) === this.tile.floor) validStart = false;
+                if (this.getTile(attemptedStart.add(d)) === Tile.floor) validStart = false;
                 if (!this.inBounds(attemptedStart.add(d))) validStart = false;
             })
         }
@@ -277,26 +257,26 @@ export default class Stage {
             new Vec(this.w, this.h)
         );
         all.tiles.forEach(t => {
-            if (this.getTile(t) === this.tile.stone &&
-                this.getTile(t.add(Direction.S)) === this.tile.floor) {
-                this._addTile(this.tile.wall, t);
+            if (this.getTile(t) === Tile.stone &&
+                this.getTile(t.add(Direction.S)) === Tile.floor) {
+                this._addTile(Tile.wall, t);
             }
         });
     };
 
     _carve(vec) {
-        this._addTile(this.tile.floor, vec);
+        this._addTile(Tile.floor, vec);
     };
 
     _canCarve(vec, dir) {
         //if (!this.inBounds(vec.add(dir))) return false;
         if (!this._tiles.bounds.contains(vec.add(dir))) return false;
-        if (this.getTile(vec.add(dir)) === this.tile.floor) return false;
+        if (this.getTile(vec.add(dir)) === Tile.floor) return false;
 
         let check = vec.add(dir.scale(2));
         //if (!this.inBounds(check)) return false;
         if (!this._tiles.bounds.contains(check)) return false;
-        return this.getTile(check) !== this.tile.floor;
+        return this.getTile(check) !== Tile.floor;
     };
 
     _pruneDeadEnds() {
@@ -308,17 +288,17 @@ export default class Stage {
             var test = 0;
 
             all.forEach(v => {
-                if (this.getTile(v) !== this.tile.floor) return;
+                if (this.getTile(v) !== Tile.floor) return;
                 test++;
                 var open = 0;
                 Direction.cardinal.forEach(d => {
-                    if (this.getTile(v.add(d)) === this.tile.floor) open++;
+                    if (this.getTile(v.add(d)) === Tile.floor) open++;
                 });
 
                 if (open != 1) return;
 
                 done = false;
-                this._addTile(this.tile.stone, v);
+                this._addTile(Tile.stone, v);
             });
         }
     };
@@ -352,7 +332,7 @@ export default class Stage {
             candidates.forEach(v => {
                 var open = 0;
                 Direction.cardinal.forEach(d => {
-                    if (this.getTile(v.add(d)) === this.tile.floor) open++;
+                    if (this.getTile(v.add(d)) === Tile.floor) open++;
                 });
 
                 if (open < 2) candidates.splice(candidates.indexOf(v), 1);
@@ -379,7 +359,7 @@ export default class Stage {
             for (var y = 1; y < this.h; y += 2) {
                 var tile = new Vec(x, y);
 
-                if (this.getTile(tile) === this.tile.stone) this._generateCorridors(tile);
+                if (this.getTile(tile) === Tile.stone) this._generateCorridors(tile);
             }
         }
 

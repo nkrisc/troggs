@@ -9,6 +9,8 @@ export default class Actor {
         this.power = stats.power || 1;
         this.defense = stats.defense || 1;
 
+        this.action = null;
+
         stage.actorsByPos.set(this.pos, this);
     }
 
@@ -18,6 +20,18 @@ export default class Actor {
 
     get y() {
         return this.pos.y;
+    }
+
+    get needsInput() {
+        return false;
+    }
+
+    set nextAction(action) {
+        this.action = action;
+    }
+
+    get nextAction() {
+        return this.action;
     }
 
     createAttack() {

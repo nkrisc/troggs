@@ -31,7 +31,7 @@ export default class Array2D {
         this._elements[vec.y * this._w + vec.x] = value;
     }
 
-    fill(value) {
+    fill(value) {221
         for (var x = 0; x < this._w; x++) {
             for (var y = 0; y < this._h; y++) {
                 this._elements[y * this._w + x] = value;

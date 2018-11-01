@@ -1,17 +1,22 @@
 import { Monsters } from '../content/monster_defs.js';
 import Stage from './stage.js';
 import Scene from './scene.js';
-import Entity from './entity.js';
+import VecMap from './utils/VecMap.js';
+import Entity from './../old/entity.js';
 
 //TODO: Move monster definitions and actions out of here
 
 export default class Game {
     constructor(canvas) {
-        this.scene = new Scene(canvas, 9, 14);
+        this.scene = new Scene(canvas, 16, 16);
         this.scene.initialize();
 
         this._currentStage = 0;
         this.stages = [];
+
+        this.turn = null;
+        this.turnComplete = true;
+        this.needsInput = false;
 
         //In the future, can make new stages for new levels
         this.stages.push(new Stage(142, 62));
@@ -210,13 +215,24 @@ export default class Game {
         //this.stages.push(new Stage);
     }
 
-    update() {
-        this.stage.actors.forEach(actor => {
-            if (actor.isAI) actor.logic(actor);
-            actor.act();
-        });
+    * update() {
+        var actors = this.stage.actors;
+        var currentActorIndex = 0;
+        this.turnComplete = false;
 
-        this.scene.draw(this.stage);
+        while (currentActorIndex < actors.length) {
+            var currentActor = actors[currentActorIndex];
+
+            if (currentActor.needsInput) {
+                this.needsInput = true;
+                yield;
+            }
+
+            currentActor.update();
+            currentActorIndex++;
+        }
+
+        this.turnComplete = true;
     }
 
     initialize() {

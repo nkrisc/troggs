@@ -60,7 +60,24 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('curtain').style.display = 'none';
 
     function loop() {
-        game.update();
+        //Check if we're in the middle of a turn.
+        if (game.turnComplete) {
+            //The turn is finished so draw the result.
+            game.scene.draw(game.stage);
+
+            //Start a new turn
+            console.log('Starting new turn.');
+            game.turn = game.update();
+            game.turn.next();
+        } else {
+            if (!game.needsInput) {
+                //We're not waiting on user input and in the middle of a turn.
+                //Iterate the update function to continue processing the turn.
+                game.turn.next();
+            }
+        }
+
+        window.requestAnimationFrame(loop);
     }
 
     window.requestAnimationFrame(loop);

@@ -1,5 +1,6 @@
 import Rect from './utils/rect.js';
 import Vec from './utils/vec.js';
+import Font from './utils/font.js';
 
 export default class Scene {
     constructor(canvas, gx, gy) {
@@ -8,13 +9,28 @@ export default class Scene {
         this.ctx = canvas.getContext('2d');
         this._gx = gx;
         this._gy = gy;
+        this.font = null;
+
+        window.ctx = this.ctx;
 
     }
 
     initialize() {
-        this.ctx.font = `bold ${this._gy}px "8bitoperator"`;
-        this.ctx.textBaseline = 'top';
+        //this.ctx.font = `bold ${this._gy}px "8bitoperator"`;
+        //this.ctx.textBaseline = 'top';
         this.ctx.scale(2, 2);
+
+        function loaded(img, _this) {
+            _this.font = new Font(img, _this._gx)
+        }
+
+        var fontSource = new Image();
+        fontSource.onload = loaded(fontSource, this)
+        fontSource.src = './font_8.png';
+
+        window.font = this.font;
+
+
     }
 
     get w() {
@@ -91,16 +107,10 @@ export default class Scene {
     _drawTile(tile, x, y) {
         //x = this.x(x);
         //y = this.y(y)
+        var rect =  new Rect(new Vec(x, y), new Vec(this._gx, this._gy));
 
-        var rect =  new Rect(new Vec(x, y), new Vec(this._gx, this._gy))
-        this._drawRect(tile.bgColor, rect)
-        this._drawText(tile.glyph, tile.color, x, y)
-
-        if (tile.name === 'wall') {
-            this._drawRect('#000', rect);
-            this._drawRect('#333', new Rect(new Vec(x, y), new Vec(this._gx, this._gy / 2)))
-        }
-
+        this._drawRect(tile.bgColor, rect);
+        this.ctx.drawImage(this.font.getGlyph(tile.appearance, tile.color), this.x(x), this.y(y));
     }
 }
 
@@ -114,7 +124,7 @@ for (let x = 0; x < Math.floor(canvas.width / gx); x++) {
         ctx.fillStyle = tile.bgColor;
         ctx.fillRect(x * gx, y * gy, gx, gy);
         ctx.fillStyle = tile.color;
-        ctx.fillText(tile.glyph, x * gx, y * gy);
+        ctx.fillText(tile.Glyph, x * gx, y * gy);
 
         if (tile === Stage.tile.wall) {
             ctx.fillStyle = '#000';
