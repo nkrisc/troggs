@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="game.bundle.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./main.css">
+</head>
+<body oncontextmenu="return false;">
+<!--<p style="font-family: '8bitoperator'; color:white;font-size:30px">TROGGS!</p>-->
+<label>
+    Debug<input type="checkbox" onchange="void(DEBUG = !DEBUG)">
+</label>
+<label>
+    Path Debug<input type="checkbox" onchange="void(PATH_DEBUG = !PATH_DEBUG)">
+</label>
+<br>
+
+<div id="curtain" style="width:639px;height:434px;background-color:#000;position:absolute;text-align:center;"><h1>LOADING</h1></div>
+<canvas id="canvas" width="2000" height="2000" style="width:1000px;height:1000px;"></canvas>
+<div id="log"></div>
+</body>
+</html>

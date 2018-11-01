@@ -1,0 +1,97 @@
+@font-face {
+    font-family: '8bitoperator';
+    src: url('https://rawgit.com/nkrisc/Dotmatrix/Namespace-wrapper/DeterminationSansWeb.woff?raw=true') format('truetype')
+}
+
+label {
+    color: white;
+    font-family: '8bitoperator';
+}
+
+h1 {
+    color: white;
+    font-family: '8bitoperator';
+}
+
+p {
+    font-family: Monaco, MonoSpace;
+    font-size: 12px;
+    color: #e1e1e1;
+    margin: 0;
+    padding: 7px 5px;
+}
+
+#log p:nth-child(even) {
+    background-color: #222;
+}
+
+.line-prefix {
+    color: orange;
+}
+
+#log p.warn {
+    background-color: #ddca7e;
+    color: #333;
+    font-weight: 600;
+}
+
+.warn > .line-prefix {
+    color: #333;
+}
+
+body {
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    height:500px;
+    overflow: hidden;
+}
+
+#log {
+    border-top: 1px solid #e1e1e1;
+    margin-top: 10px;
+    height: 300px;
+    overflow-y: scroll;
+}
+
+.flashit{
+    -webkit-animation: flash linear 1s infinite;
+    animation: flash linear 1s infinite;
+}
+@keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: .6; }
+    100% { opacity: 1; }
+}
+
+table {
+    font-family: '8bitoperator';
+    font-size: 16px;
+    color: white;
+}
+
+td {
+    padding-left: 10px;
+    border-right: 1px white dashed;
+}
+
+tr.name {
+    color: white;
+    font-size: 20px;
+}
+
+.name > td {
+    width: 80px;
+}
+
+td span {
+    color: #666;
+}
+
+.aggressive {
+    color: #E33;
+}
+
+.fearful {
+    color: #66F;
+}
